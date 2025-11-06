@@ -85,6 +85,15 @@ void mark_attendance(){
     getline(cin, date);
     
     for (int i = 0; i < studentcount; i++){
+        for (int j = 0; j < students[i].datecount; j++){
+            if (students[i].records[j].date == date){
+                cout << "Attendance for " << date << " has already been marked!\n";
+                return;
+            }
+        }
+    }
+    
+    for (int i = 0; i < studentcount; i++){
         cout << "Is " << students[i].name << " present? (y/n): ";
         char present;
         cin >> present;
@@ -99,23 +108,23 @@ void mark_attendance(){
 
 
 int search_student(int index, const string& query) {
-    if (index == studentcount) return -1;
-    if (students[index].name == query) return index;
+    if (index == studentcount){
+        return -1;
+    }
+    if (students[index].name == query){
+        return index;
+    }
     return search_student(index + 1, query);
 }
 
-void view_own_attendance(){
-    if (studentcount == 0){
-        cout << "No student found\n";
+void view_own_attendance(int student_index){
+    cout << "Attendance for " << students[student_index].name << ":\n";
+    if (students[student_index].datecount == 0) {
+        cout << "No attendance records found.\n";
         return;
     }
-    for (int i = 0; i < studentcount; i++){
-        cout << "Attendance for " << students[i].name << ":\n";
-        for (int j = 0; j < students[i].datecount; j++){
-            cout << students[i].records[j].date << ": " 
-                 << (students[i].records[j].ispresent ? "Present" : "Absent") << endl;
-        }
-        cout << endl;
+    for (int j = 0; j < students[student_index].datecount; j++){
+        cout << students[student_index].records[j].date << ": "  << (students[student_index].records[j].ispresent ? "Present" : "Absent") << endl;
     }
 }
 
@@ -182,7 +191,7 @@ void teacher_menu() {
     }
 }
 
-void student_menu() {
+void student_menu(int student_index) {
     while (true) {
         cout << "\n--- Student Menu ---\n";
         cout << "1. View My Attendance\n";
@@ -194,9 +203,13 @@ void student_menu() {
         cin.ignore();
 
         switch (choice) {
-            case 1: view_own_attendance(); break;
-            case 2: return;
-            default: cout << "Invalid choice\n";
+            case 1: 
+                view_own_attendance(student_index); 
+                break;
+            case 2: 
+                return;
+            default: 
+                cout << "Invalid choice\n";
         }
     }
 }
@@ -228,7 +241,7 @@ int main() {
             getline(cin, name);
             int index = search_student(0, name);
             if (index != -1) {
-                student_menu();
+                student_menu(index);
             } else {
                 cout << "Student not found.\n";
             }
